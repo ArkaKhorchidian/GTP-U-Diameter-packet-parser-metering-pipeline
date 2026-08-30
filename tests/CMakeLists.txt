@@ -8,7 +8,10 @@ target_link_libraries(gtpm_test_support INTERFACE gtpm_core)
 set(GTPM_TESTS
   test_gtpu
   test_diameter
-  test_net)
+  test_net
+  test_spsc
+  test_flat_hash
+  test_seqlock)
 
 foreach(t IN LISTS GTPM_TESTS)
   add_executable(${t} ${t}.cpp)
