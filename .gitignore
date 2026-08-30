@@ -1,0 +1,30 @@
+# Build output
+build/
+build-*/
+cmake-build-*/
+out/
+_deps/
+
+# Generated artifacts
+*.pcap
+!tests/data/*.pcap
+*.ndjson
+*.o
+*.a
+*.so
+*.dylib
+compile_commands.json
+.cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Fuzzing
+fuzz-*.log
+crash-*
+leak-*
+timeout-*
+corpus/
