@@ -367,6 +367,11 @@ class MeterEngine {
     return it == imsi_index_.end() ? SIZE_MAX : it->second;
   }
 
+  /// Raw flow-slot access, for a reader that scans the table incrementally
+  /// instead of paying for a full pass in one go.
+  [[nodiscard]] size_t flow_capacity() const noexcept { return flows_.size(); }
+  [[nodiscard]] const FlowEntry& flow_at(size_t i) const noexcept { return flows_[i]; }
+
   [[nodiscard]] const FlowEntry* find_flow(uint64_t key) const {
     if (flows_.empty()) return nullptr;
     const uint64_t k = key ? key : 1;
