@@ -11,7 +11,10 @@ set(GTPM_TESTS
   test_net
   test_spsc
   test_flat_hash
-  test_seqlock)
+  test_seqlock
+  test_meter
+  test_pipeline
+  test_session)
 
 foreach(t IN LISTS GTPM_TESTS)
   add_executable(${t} ${t}.cpp)
