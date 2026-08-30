@@ -9,7 +9,7 @@ project(gtp_meter
 # ---------------------------------------------------------------------------
 option(GTPM_BUILD_TESTS  "Build unit tests"                 ON)
 option(GTPM_BUILD_BENCH  "Build benchmark harness"          ON)
-option(GTPM_BUILD_FUZZ   "Build libFuzzer targets"          OFF)
+option(GTPM_BUILD_FUZZ   "Build fuzz targets"               ON)
 option(GTPM_NATIVE_ARCH  "Tune for the host CPU"            ON)
 option(GTPM_ASAN         "Build with AddressSanitizer"      OFF)
 option(GTPM_UBSAN        "Build with UndefinedBehaviorSan"  OFF)
