@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="460" viewBox="0 0 760 460" font-family="ui-sans-serif,system-ui,sans-serif">
+<rect width="760" height="460" fill="#ffffff"/>
+<text x="78" y="24" font-size="15" font-weight="600" fill="#111827">End-to-end latency vs. achieved throughput</text>
+<text x="78" y="40" font-size="11" fill="#6b7280">frame in → subscriber counter updated; log-scale latency</text>
+<line x1="78" y1="387.2" x2="610" y2="387.2" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="391.2" font-size="10" fill="#6b7280" text-anchor="end">200 ns</text>
+<line x1="78" y1="358.3" x2="610" y2="358.3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="362.3" font-size="10" fill="#6b7280" text-anchor="end">500 ns</text>
+<line x1="78" y1="336.5" x2="610" y2="336.5" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="340.5" font-size="10" fill="#6b7280" text-anchor="end">1 µs</text>
+<line x1="78" y1="314.6" x2="610" y2="314.6" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="318.6" font-size="10" fill="#6b7280" text-anchor="end">2 µs</text>
+<line x1="78" y1="285.8" x2="610" y2="285.8" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="289.8" font-size="10" fill="#6b7280" text-anchor="end">5 µs</text>
+<line x1="78" y1="263.9" x2="610" y2="263.9" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="267.9" font-size="10" fill="#6b7280" text-anchor="end">10 µs</text>
+<line x1="78" y1="242.1" x2="610" y2="242.1" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="246.1" font-size="10" fill="#6b7280" text-anchor="end">20 µs</text>
+<line x1="78" y1="213.2" x2="610" y2="213.2" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="217.2" font-size="10" fill="#6b7280" text-anchor="end">50 µs</text>
+<line x1="78" y1="191.4" x2="610" y2="191.4" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="195.4" font-size="10" fill="#6b7280" text-anchor="end">100 µs</text>
+<line x1="78" y1="169.5" x2="610" y2="169.5" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="173.5" font-size="10" fill="#6b7280" text-anchor="end">200 µs</text>
+<line x1="78" y1="140.7" x2="610" y2="140.7" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="144.7" font-size="10" fill="#6b7280" text-anchor="end">500 µs</text>
+<line x1="78" y1="118.8" x2="610" y2="118.8" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="122.8" font-size="10" fill="#6b7280" text-anchor="end">1000 µs</text>
+<line x1="78" y1="97.0" x2="610" y2="97.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="101.0" font-size="10" fill="#6b7280" text-anchor="end">2000 µs</text>
+<line x1="78" y1="68.1" x2="610" y2="68.1" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="72.1" font-size="10" fill="#6b7280" text-anchor="end">5000 µs</text>
+<line x1="78" y1="46.3" x2="610" y2="46.3" stroke="#e5e7eb" stroke-width="1"/>
+<text x="70" y="50.3" font-size="10" fill="#6b7280" text-anchor="end">10000 µs</text>
+<line x1="78.0" y1="42" x2="78.0" y2="402" stroke="#f3f4f6" stroke-width="1"/>
+<text x="78.0" y="420" font-size="10" fill="#6b7280" text-anchor="middle">0.0</text>
+<line x1="184.4" y1="42" x2="184.4" y2="402" stroke="#f3f4f6" stroke-width="1"/>
+<text x="184.4" y="420" font-size="10" fill="#6b7280" text-anchor="middle">3.3</text>
+<line x1="290.8" y1="42" x2="290.8" y2="402" stroke="#f3f4f6" stroke-width="1"/>
+<text x="290.8" y="420" font-size="10" fill="#6b7280" text-anchor="middle">6.6</text>
+<line x1="397.2" y1="42" x2="397.2" y2="402" stroke="#f3f4f6" stroke-width="1"/>
+<text x="397.2" y="420" font-size="10" fill="#6b7280" text-anchor="middle">9.9</text>
+<line x1="503.6" y1="42" x2="503.6" y2="402" stroke="#f3f4f6" stroke-width="1"/>
+<text x="503.6" y="420" font-size="10" fill="#6b7280" text-anchor="middle">13.2</text>
+<line x1="610.0" y1="42" x2="610.0" y2="402" stroke="#f3f4f6" stroke-width="1"/>
+<text x="610.0" y="420" font-size="10" fill="#6b7280" text-anchor="middle">16.5</text>
+<text x="344" y="446" font-size="11" fill="#374151" text-anchor="middle">achieved throughput (Mpps, single core)</text>
+<path d="M142.6,319.6 L423.9,61.4" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,3"/>
+<circle cx="142.6" cy="319.6" r="2.6" fill="#2563eb"/>
+<circle cx="423.9" cy="61.4" r="2.6" fill="#2563eb"/>
+<path d="M142.6,269.0 L423.9,54.8" fill="none" stroke="#0891b2" stroke-width="2" stroke-dasharray="4,3"/>
+<circle cx="142.6" cy="269.0" r="2.6" fill="#0891b2"/>
+<circle cx="423.9" cy="54.8" r="2.6" fill="#0891b2"/>
+<path d="M142.6,244.7 L423.9,54.8" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="4,3"/>
+<circle cx="142.6" cy="244.7" r="2.6" fill="#d97706"/>
+<circle cx="423.9" cy="54.8" r="2.6" fill="#d97706"/>
+<path d="M142.6,207.4 L423.9,54.8" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,3"/>
+<circle cx="142.6" cy="207.4" r="2.6" fill="#dc2626"/>
+<circle cx="423.9" cy="54.8" r="2.6" fill="#dc2626"/>
+<text x="624" y="48" font-size="11" font-weight="600" fill="#111827">baseline</text>
+<line x1="624" y1="60" x2="644" y2="60" stroke="#2563eb" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="650" y="64" font-size="10" fill="#374151">p50</text>
+<line x1="624" y1="75" x2="644" y2="75" stroke="#0891b2" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="650" y="79" font-size="10" fill="#374151">p99</text>
+<line x1="624" y1="90" x2="644" y2="90" stroke="#d97706" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="650" y="94" font-size="10" fill="#374151">p99.9</text>
+<line x1="624" y1="105" x2="644" y2="105" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,3"/>
+<text x="650" y="109" font-size="10" fill="#374151">p99.99</text>
+<path d="M94.1,402.0 L110.3,402.0 L142.6,402.0 L207.2,402.0 L336.3,402.0 L570.6,402.0" fill="none" stroke="#2563eb" stroke-width="2"/>
+<circle cx="94.1" cy="402.0" r="2.6" fill="#2563eb"/>
+<circle cx="110.3" cy="402.0" r="2.6" fill="#2563eb"/>
+<circle cx="142.6" cy="402.0" r="2.6" fill="#2563eb"/>
+<circle cx="207.2" cy="402.0" r="2.6" fill="#2563eb"/>
+<circle cx="336.3" cy="402.0" r="2.6" fill="#2563eb"/>
+<circle cx="570.6" cy="402.0" r="2.6" fill="#2563eb"/>
+<path d="M94.1,370.9 L110.3,385.8 L142.6,386.0 L207.2,385.8 L336.3,385.8 L570.6,276.5" fill="none" stroke="#0891b2" stroke-width="2"/>
+<circle cx="94.1" cy="370.9" r="2.6" fill="#0891b2"/>
+<circle cx="110.3" cy="385.8" r="2.6" fill="#0891b2"/>
+<circle cx="142.6" cy="386.0" r="2.6" fill="#0891b2"/>
+<circle cx="207.2" cy="385.8" r="2.6" fill="#0891b2"/>
+<circle cx="336.3" cy="385.8" r="2.6" fill="#0891b2"/>
+<circle cx="570.6" cy="276.5" r="2.6" fill="#0891b2"/>
+<path d="M94.1,253.9 L110.3,277.2 L142.6,282.4 L207.2,284.1 L336.3,263.6 L570.6,228.4" fill="none" stroke="#d97706" stroke-width="2"/>
+<circle cx="94.1" cy="253.9" r="2.6" fill="#d97706"/>
+<circle cx="110.3" cy="277.2" r="2.6" fill="#d97706"/>
+<circle cx="142.6" cy="282.4" r="2.6" fill="#d97706"/>
+<circle cx="207.2" cy="284.1" r="2.6" fill="#d97706"/>
+<circle cx="336.3" cy="263.6" r="2.6" fill="#d97706"/>
+<circle cx="570.6" cy="228.4" r="2.6" fill="#d97706"/>
+<path d="M94.1,148.1 L110.3,231.7 L142.6,230.6 L207.2,243.8 L336.3,226.0 L570.6,224.9" fill="none" stroke="#dc2626" stroke-width="2"/>
+<circle cx="94.1" cy="148.1" r="2.6" fill="#dc2626"/>
+<circle cx="110.3" cy="231.7" r="2.6" fill="#dc2626"/>
+<circle cx="142.6" cy="230.6" r="2.6" fill="#dc2626"/>
+<circle cx="207.2" cy="243.8" r="2.6" fill="#dc2626"/>
+<circle cx="336.3" cy="226.0" r="2.6" fill="#dc2626"/>
+<circle cx="570.6" cy="224.9" r="2.6" fill="#dc2626"/>
+<text x="624" y="134" font-size="11" font-weight="600" fill="#111827">gtp-meter</text>
+<line x1="624" y1="146" x2="644" y2="146" stroke="#2563eb" stroke-width="2"/>
+<text x="650" y="150" font-size="10" fill="#374151">p50</text>
+<line x1="624" y1="161" x2="644" y2="161" stroke="#0891b2" stroke-width="2"/>
+<text x="650" y="165" font-size="10" fill="#374151">p99</text>
+<line x1="624" y1="176" x2="644" y2="176" stroke="#d97706" stroke-width="2"/>
+<text x="650" y="180" font-size="10" fill="#374151">p99.9</text>
+<line x1="624" y1="191" x2="644" y2="191" stroke="#dc2626" stroke-width="2"/>
+<text x="650" y="195" font-size="10" fill="#374151">p99.99</text>
+<line x1="78" y1="402" x2="610" y2="402" stroke="#9ca3af" stroke-width="1"/>
+<line x1="78" y1="42" x2="78" y2="402" stroke="#9ca3af" stroke-width="1"/>
+</svg>

@@ -2,7 +2,10 @@
 # print a CSV row so results/ can be regenerated with a shell redirect.
 
 set(GTPM_BENCHES
-  bench_parse)
+  bench_parse
+  bench_ring
+  bench_hash
+  bench_e2e)
 
 foreach(b IN LISTS GTPM_BENCHES)
   add_executable(${b} ${b}.cpp)

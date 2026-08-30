@@ -1,0 +1,24 @@
+# benchmark: bench_e2e
+# cpu: Apple M5
+# cores: 10
+# compiler: clang 21.0.0 (clang-2100.1.1.101)
+# build: release (NDEBUG)
+# note: macOS gives affinity hints only, and has no isolcpus or
+#       performance governor. Tail latency here includes scheduler
+#       noise; run on isolated Linux cores for publishable tails.
+# timestamp: 2026-08-30T23:52:01.604Z
+# frame -> parse -> ring -> subscriber counter; latency in nanoseconds
+# 512 subscribers, mixed 64/512/1400 B payloads, a quarter carrying a 5G QFI
+# corpus: 8192 distinct frames, 738.6 B average
+
+pipeline        ,   offered,  achieved,      Gbps,    drops,     p50,     p99,   p99.9,  p99.99,     max
+gtp-meter       ,      0.50,     0.500,     2.954,        0,     125,     335,   13759,  395263,  578334
+gtp-meter       ,      1.00,     1.000,     5.909,        0,     125,     209,    6559,   27775,   44959
+gtp-meter       ,      2.00,     2.000,    11.817,        0,     125,     208,    5567,   28799,   54042
+gtp-meter       ,      4.00,     4.000,    23.634,        0,     125,     209,    5279,   18943,   30084
+gtp-meter       ,      8.00,     8.000,    47.269,        0,     125,     209,   10111,   33279,   34917
+gtp-meter       ,   unpaced,    15.256,    90.141,        0,     125,    6719,   30847,   34559,   34667
+
+# baseline: mutex-guarded std::queue + std::unordered_map counters
+baseline        ,      2.00,     2.000,    11.817,        0,    1711,    8511,   18431,   60159,   83083
+baseline        ,   unpaced,    10.714,    63.303,        0, 6193151, 7634943, 7634943, 7634943, 7624167

@@ -9,6 +9,9 @@ _deps/
 *.pcap
 !tests/data/*.pcap
 *.ndjson
+*-expected.json
+*-sessions.csv
+!bench/results/*.csv
 *.o
 *.a
 *.so
