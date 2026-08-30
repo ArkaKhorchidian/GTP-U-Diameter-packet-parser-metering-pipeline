@@ -387,27 +387,39 @@ HttpResponse route(const Runtime& runtime, const HttpRequest& req) {
   }
   if (req.path == "/subscribers" || req.path.rfind("/subscribers/", 0) == 0) {
     res.content_type = "application/json";
+
+    // Validate the request before consulting state: a malformed IMSI is a 400
+    // whether or not a snapshot happens to have been published yet.
+    bool single = req.path != "/subscribers";
+    uint64_t imsi = 0;
+    if (single) {
+      const std::string imsi_str = req.path.substr(std::strlen("/subscribers/"));
+      if (imsi_str.empty()) {
+        res.status = 400;
+        res.body = "{\"error\":\"imsi must be numeric\"}\n";
+        return res;
+      }
+      for (const char c : imsi_str) {
+        if (c < '0' || c > '9') {
+          res.status = 400;
+          res.body = "{\"error\":\"imsi must be numeric\"}\n";
+          return res;
+        }
+        imsi = imsi * 10 + static_cast<uint64_t>(c - '0');
+      }
+    }
+
     auto detail = runtime.detail();
     if (!detail.valid()) {
       res.status = 503;
       res.body = "{\"error\":\"no snapshot published yet\"}\n";
       return res;
     }
-    if (req.path == "/subscribers") {
+    if (!single) {
       res.body =
           render_subscribers_json(*detail, static_cast<size_t>(query_param(req.query, "limit", 50)));
       res.body += '\n';
       return res;
-    }
-    const std::string imsi_str = req.path.substr(std::strlen("/subscribers/"));
-    uint64_t imsi = 0;
-    for (const char c : imsi_str) {
-      if (c < '0' || c > '9') {
-        res.status = 400;
-        res.body = "{\"error\":\"imsi must be numeric\"}\n";
-        return res;
-      }
-      imsi = imsi * 10 + static_cast<uint64_t>(c - '0');
     }
     const std::string body = render_subscriber_json(*detail, imsi);
     if (body.empty()) {
