@@ -116,6 +116,7 @@ struct PipelineStats {
   uint64_t gy_events = 0;
   uint64_t gy_reported_octets = 0;
   uint64_t subscribers_installed = 0;
+  uint64_t teid_bind_failures = 0;  ///< TEID table full: sessions that did not bind
   uint64_t subscribers_learned = 0;
   uint64_t sessions_released = 0;
   uint64_t last_event_ns = 0;
@@ -188,16 +189,20 @@ class MeterEngine {
       info.interval_start_ns = now_ns;
     }
     info.default_rating_group = spec.rating_group;
+
+    // A re-install is a session modification: any tunnel that moved must be
+    // unbound, or the old TEID keeps metering to this subscriber with the old
+    // direction long after the network stopped using it.
+    if (info.ul_teid != 0 && info.ul_teid != spec.ul_teid) (void)teid_map_.erase(info.ul_teid);
+    if (info.dl_teid != 0 && info.dl_teid != spec.dl_teid) (void)teid_map_.erase(info.dl_teid);
     info.ul_teid = spec.ul_teid;
     info.dl_teid = spec.dl_teid;
 
     const uint8_t slot = assign_slot(info, spec.rating_group);
-    if (spec.ul_teid != 0) {
-      bind_teid(spec.ul_teid, idx, Direction::kUplink, slot);
-    }
-    if (spec.dl_teid != 0) {
-      bind_teid(spec.dl_teid, idx, Direction::kDownlink, slot);
-    }
+    bool bound = true;
+    if (spec.ul_teid != 0) bound &= bind_teid(spec.ul_teid, idx, Direction::kUplink, slot);
+    if (spec.dl_teid != 0) bound &= bind_teid(spec.dl_teid, idx, Direction::kDownlink, slot);
+    if (!bound) return SIZE_MAX;
     return idx;
   }
 
@@ -439,12 +444,17 @@ class MeterEngine {
     return v < 2 ? 2 : (std::has_single_bit(v) ? v : std::bit_ceil(v));
   }
 
-  void bind_teid(uint32_t teid, size_t sub_idx, Direction dir, uint8_t slot) {
+  /// Returns false when the TEID table is full. That is a configuration
+  /// failure, not a packet-level event, and it must be loud: a session that
+  /// silently fails to bind bills nobody for real traffic.
+  bool bind_teid(uint32_t teid, size_t sub_idx, Direction dir, uint8_t slot) {
     TeidBinding b;
     b.sub_idx = static_cast<uint32_t>(sub_idx);
     b.dir = static_cast<uint8_t>(dir);
     b.slot = slot;
-    (void)teid_map_.insert(teid, b);
+    if (teid_map_.insert(teid, b)) return true;
+    ++stats_.teid_bind_failures;
+    return false;
   }
 
   /// Assign an accounting slot for `bucket_id`, or return the aggregate slot.
@@ -492,7 +502,7 @@ class MeterEngine {
     } else {
       info.ul_teid = ev.teid;
     }
-    bind_teid(ev.teid, idx, dir, slot);
+    if (!bind_teid(ev.teid, idx, dir, slot)) return nullptr;
     return teid_map_.find(ev.teid);
   }
 

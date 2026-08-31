@@ -34,6 +34,7 @@ PipelineSnapshot sample_snapshot() {
   s.meter.ul_packets = 300;
   s.meter.dl_packets = 600;
   s.meter.unknown_teid_events = 5;
+  s.meter.teid_bind_failures = 2;
   s.meter.flows_active = 42;
   s.meter.records_emitted = 7;
   s.meter.gy_events = 4;
@@ -134,6 +135,7 @@ TEST("reporter/prometheus_exposition") {
   CHECK(contains(text, "gtpm_ingest_events_dropped_total 3"));
   CHECK(contains(text, "gtpm_e2e_latency_ns{quantile=\"0.99\"} 900"));
   CHECK(contains(text, "gtpm_teid_probes_per_lookup 1.02"));
+  CHECK(contains(text, "gtpm_teid_bind_failures_total 2"));
   // Every HELP must be followed by a TYPE: broken exposition breaks scrapes.
   size_t help_count = 0;
   size_t type_count = 0;
@@ -161,6 +163,7 @@ TEST("reporter/stats_json") {
   CHECK(contains(json, "\"ul_bytes\":250000"));
   CHECK(contains(json, "\"p99\":900"));
   CHECK(contains(json, "\"meter_capacity\":65536"));
+  CHECK(contains(json, "\"teid_bind_failures\":2"));
 }
 
 TEST("reporter/subscribers_json") {

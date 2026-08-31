@@ -107,9 +107,8 @@ namespace detail {
 
   Buf ip;
   ip.reserve(total_len);
-  const auto header =
-      detail::ipv4_header(s.src_ip, s.dst_ip, static_cast<uint8_t>(IpProto::kUdp), total_len,
-                          s.ttl);
+  const auto header = detail::ipv4_header(s.src_ip, s.dst_ip, static_cast<uint8_t>(IpProto::kUdp),
+                                          total_len, s.ttl);
   ip.insert(ip.end(), header.begin(), header.end());
 
   put_be16(ip, s.src_port);
@@ -128,8 +127,8 @@ namespace detail {
 
   Buf ip;
   ip.reserve(total_len);
-  const auto header = detail::ipv4_header(
-      s.src_ip, s.dst_ip, static_cast<uint8_t>(IpProto::kTcp), total_len, s.ttl);
+  const auto header = detail::ipv4_header(s.src_ip, s.dst_ip, static_cast<uint8_t>(IpProto::kTcp),
+                                          total_len, s.ttl);
   ip.insert(ip.end(), header.begin(), header.end());
 
   put_be16(ip, s.src_port);

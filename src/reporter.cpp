@@ -102,6 +102,9 @@ std::string render_prometheus(const PipelineSnapshot& s, const DetailSnapshot* d
          "gtpm_meter_direction_packets_total{direction=\"downlink\"} %llu\n",
          static_cast<unsigned long long>(s.meter.ul_packets),
          static_cast<unsigned long long>(s.meter.dl_packets));
+  counter(out, "gtpm_teid_bind_failures_total",
+          "Sessions that could not be bound because the TEID table is full",
+          s.meter.teid_bind_failures);
   counter(out, "gtpm_meter_unknown_teid_events_total",
           "Packets on a TEID with no installed session", s.meter.unknown_teid_events);
   counter(out, "gtpm_meter_unknown_teid_bytes_total", "Bytes on a TEID with no installed session",
@@ -183,7 +186,8 @@ std::string render_stats_json(const PipelineSnapshot& s) {
          "\"diameter_messages\":%llu},"
          "\"meter\":{\"events\":%llu,\"bytes\":%llu,\"ul_bytes\":%llu,\"dl_bytes\":%llu,"
          "\"ul_packets\":%llu,\"dl_packets\":%llu,\"unknown_teid_events\":%llu,"
-         "\"unknown_teid_bytes\":%llu,\"flows_active\":%llu,\"flow_evictions\":%llu,"
+         "\"unknown_teid_bytes\":%llu,\"teid_bind_failures\":%llu,"
+         "\"flows_active\":%llu,\"flow_evictions\":%llu,"
          "\"records_emitted\":%llu,\"records_dropped\":%llu,\"records_written\":%llu,"
          "\"gy_events\":%llu},"
          "\"rings\":{\"meter_depth\":%llu,\"meter_capacity\":%llu,\"gy_depth\":%llu,"
@@ -209,6 +213,7 @@ std::string render_stats_json(const PipelineSnapshot& s) {
          static_cast<unsigned long long>(s.meter.dl_packets),
          static_cast<unsigned long long>(s.meter.unknown_teid_events),
          static_cast<unsigned long long>(s.meter.unknown_teid_bytes),
+         static_cast<unsigned long long>(s.meter.teid_bind_failures),
          static_cast<unsigned long long>(s.meter.flows_active),
          static_cast<unsigned long long>(s.meter.flow_evictions),
          static_cast<unsigned long long>(s.meter.records_emitted),

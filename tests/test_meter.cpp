@@ -64,6 +64,41 @@ TEST("meter/install_session_binds_both_teids") {
   CHECK_EQ(m.stats().subscribers_installed, 1ULL);
 }
 
+TEST("meter/session_modification_unbinds_the_old_tunnel") {
+  // A PFCP Session Modification moves a tunnel. The old TEID must stop
+  // metering to this subscriber, or it keeps billing them with a stale
+  // direction long after the network stopped using it.
+  MeterEngine m(small_config());
+  const size_t idx = m.install_session(session(1, 100, 200), 0);
+  REQUIRE(idx != SIZE_MAX);
+  m.apply(packet(100, 500));
+  CHECK_EQ(m.counters(idx).ul_bytes, 500ULL);
+
+  const size_t again = m.install_session(session(1, 300, 200), 0);  // uplink moved
+  CHECK_EQ(again, idx);
+  CHECK_EQ(m.teid_map().size(), size_t{2});
+
+  m.apply(packet(100, 700));  // old uplink TEID
+  CHECK_EQ(m.stats().unknown_teid_events, 1ULL);
+  CHECK_EQ(m.counters(idx).ul_bytes, 500ULL);  // counters survive the modification
+
+  m.apply(packet(300, 900));  // new uplink TEID
+  CHECK_EQ(m.counters(idx).ul_bytes, 1400ULL);
+}
+
+TEST("meter/full_teid_table_fails_loudly") {
+  MeterConfig cfg = small_config();
+  cfg.teid_table_capacity = 8;  // holds 8 TEIDs, i.e. 4 sessions
+  MeterEngine m(cfg);
+
+  size_t installed = 0;
+  for (uint32_t i = 1; i <= 8; ++i) {
+    if (m.install_session(session(i, i * 100, i * 100 + 1), 0) != SIZE_MAX) ++installed;
+  }
+  CHECK_EQ(installed, size_t{4});
+  CHECK_GT(m.stats().teid_bind_failures, 0ULL);
+}
+
 TEST("meter/direction_comes_from_the_teid_not_the_packet") {
   MeterEngine m(small_config());
   const size_t idx = m.install_session(session(1, 100, 200), 0);

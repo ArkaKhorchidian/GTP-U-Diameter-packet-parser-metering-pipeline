@@ -161,6 +161,12 @@ void print_summary(const gtpm::PipelineSnapshot& s, double elapsed_s, uint64_t r
   std::printf("  unknown TEID         %llu events, %llu bytes\n",
               static_cast<unsigned long long>(s.meter.unknown_teid_events),
               static_cast<unsigned long long>(s.meter.unknown_teid_bytes));
+  if (s.meter.teid_bind_failures != 0) {
+    std::printf(
+        "  TEID BIND FAILURES   %llu - the TEID table is too small for the session "
+        "table; raise it or sessions go unmetered\n",
+        static_cast<unsigned long long>(s.meter.teid_bind_failures));
+  }
   std::printf("  flows                %llu active, %llu evictions\n",
               static_cast<unsigned long long>(s.meter.flows_active),
               static_cast<unsigned long long>(s.meter.flow_evictions));

@@ -62,7 +62,8 @@ void Runtime::start() {
   meter_stop_.store(false);
   reporter_stop_.store(false);
 
-  if (!cfg_.records_path.empty()) {
+  // Reuse the handle across a stop/start cycle rather than leaking the old one.
+  if (!cfg_.records_path.empty() && records_file_ == nullptr) {
     records_file_ = std::fopen(cfg_.records_path.c_str(), "ab");
     if (records_file_ == nullptr) {
       std::fprintf(stderr, "gtp-meter: cannot open usage record file %s\n",
