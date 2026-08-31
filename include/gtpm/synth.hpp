@@ -40,7 +40,9 @@ inline void put_be32(Buf& b, uint32_t v) {
 inline void put_be64(Buf& b, uint64_t v) {
   for (int i = 7; i >= 0; --i) b.push_back(static_cast<uint8_t>(v >> (i * 8)));
 }
-inline void put_bytes(Buf& b, Bytes s) { b.insert(b.end(), s.begin(), s.end()); }
+inline void put_bytes(Buf& b, Bytes s) {
+  b.insert(b.end(), s.begin(), s.end());
+}
 
 /// Standard internet checksum (RFC 1071).
 [[nodiscard]] inline uint16_t checksum16(const uint8_t* data, size_t len, uint32_t seed = 0) {
@@ -120,7 +122,7 @@ struct UdpSpec {
   put_be16(ip, s.src_port);
   put_be16(ip, s.dst_port);
   put_be32(ip, seq);
-  put_be32(ip, 0);   // ack
+  put_be32(ip, 0);     // ack
   ip.push_back(0x50);  // data offset 5 words
   ip.push_back(tcp_flags);
   put_be16(ip, 0xFFFF);  // window

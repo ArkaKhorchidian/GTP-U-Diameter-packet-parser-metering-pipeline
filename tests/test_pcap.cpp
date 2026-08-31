@@ -28,7 +28,9 @@ std::string temp_path() {
   return std::string(tmpl);
 }
 
-Bytes view(const Buf& b) { return Bytes(b.data(), b.size()); }
+Bytes view(const Buf& b) {
+  return Bytes(b.data(), b.size());
+}
 
 /// Hand-build a pcap file so the reader is tested against bytes, not against
 /// our own writer.

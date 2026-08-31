@@ -102,8 +102,7 @@ std::vector<synth::Buf> make_gtpu_batch(size_t count, size_t inner_payload, bool
 }
 
 void row(const char* name, size_t frame_bytes, const Result& r) {
-  std::printf("%-28s,%8zu,%10.2f,%10.3f,%10.1f\n", name, frame_bytes, r.mpps, r.gbps,
-              r.ns_per_pkt);
+  std::printf("%-28s,%8zu,%10.2f,%10.3f,%10.1f\n", name, frame_bytes, r.mpps, r.gbps, r.ns_per_pkt);
 }
 
 }  // namespace

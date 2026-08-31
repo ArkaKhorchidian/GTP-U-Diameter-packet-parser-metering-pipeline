@@ -37,12 +37,12 @@ enum MeterFlags : uint8_t {
 };
 
 struct alignas(64) MeterEvent {
-  uint64_t ts_ns = 0;      ///< ingest timestamp; end-to-end latency starts here
-  uint64_t flow_key = 0;   ///< hash of the inner 5-tuple, 0 when not IP
-  uint32_t teid = 0;       ///< metering key
-  uint32_t bytes = 0;      ///< inner IP bytes attributed to the subscriber
-  uint32_t src_ip = 0;     ///< inner IPv4 source, 0 for IPv6
-  uint32_t dst_ip = 0;     ///< inner IPv4 destination, 0 for IPv6
+  uint64_t ts_ns = 0;     ///< ingest timestamp; end-to-end latency starts here
+  uint64_t flow_key = 0;  ///< hash of the inner 5-tuple, 0 when not IP
+  uint32_t teid = 0;      ///< metering key
+  uint32_t bytes = 0;     ///< inner IP bytes attributed to the subscriber
+  uint32_t src_ip = 0;    ///< inner IPv4 source, 0 for IPv6
+  uint32_t dst_ip = 0;    ///< inner IPv4 destination, 0 for IPv6
   uint16_t src_port = 0;
   uint16_t dst_port = 0;
   uint16_t wire_bytes = 0;  ///< captured frame length, for link-rate accounting

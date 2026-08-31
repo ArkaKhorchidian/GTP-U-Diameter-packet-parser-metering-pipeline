@@ -15,7 +15,9 @@ using synth::Buf;
 
 namespace {
 
-Bytes view(const Buf& b) { return Bytes(b.data(), b.size()); }
+Bytes view(const Buf& b) {
+  return Bytes(b.data(), b.size());
+}
 
 }  // namespace
 

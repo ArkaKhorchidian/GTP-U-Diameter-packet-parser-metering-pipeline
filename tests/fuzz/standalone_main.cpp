@@ -51,10 +51,9 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  const uint64_t iterations =
-      argc > 2 ? std::strtoull(argv[2], nullptr, 10) : 50000;
-  const uint32_t seed = argc > 3 ? static_cast<uint32_t>(std::strtoul(argv[3], nullptr, 10))
-                                 : 0x5EED;
+  const uint64_t iterations = argc > 2 ? std::strtoull(argv[2], nullptr, 10) : 50000;
+  const uint32_t seed =
+      argc > 3 ? static_cast<uint32_t>(std::strtoul(argv[3], nullptr, 10)) : 0x5EED;
 
   std::mt19937 rng(seed);
   std::vector<uint8_t> buf;

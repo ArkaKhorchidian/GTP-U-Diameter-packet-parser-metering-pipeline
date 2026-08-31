@@ -16,7 +16,9 @@ namespace gtpm {
 
 using Bytes = std::span<const uint8_t>;
 
-[[nodiscard]] inline uint8_t load_u8(const uint8_t* p) noexcept { return *p; }
+[[nodiscard]] inline uint8_t load_u8(const uint8_t* p) noexcept {
+  return *p;
+}
 
 [[nodiscard]] inline uint16_t load_be16(const uint8_t* p) noexcept {
   uint16_t v;

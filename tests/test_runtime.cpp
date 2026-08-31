@@ -21,7 +21,9 @@ using synth::Buf;
 
 namespace {
 
-Bytes view(const Buf& b) { return Bytes(b.data(), b.size()); }
+Bytes view(const Buf& b) {
+  return Bytes(b.data(), b.size());
+}
 
 std::string temp_path() {
   char tmpl[] = "/tmp/gtpm-runtime-XXXXXX";

@@ -18,7 +18,9 @@ using synth::Buf;
 
 namespace {
 
-Bytes view(const Buf& b) { return Bytes(b.data(), b.size()); }
+Bytes view(const Buf& b) {
+  return Bytes(b.data(), b.size());
+}
 
 MeterConfig small_config() {
   MeterConfig cfg;
@@ -27,8 +29,8 @@ MeterConfig small_config() {
   cfg.flow_table_capacity = 1024;
   cfg.report_interval_ns = 1'000'000'000ULL;
   cfg.volume_threshold_bytes = 1u << 20;
-  cfg.sweep_period_ns = 0;   // sweep on every poll() in tests
-  cfg.sweep_fraction = 1;    // whole table per sweep
+  cfg.sweep_period_ns = 0;  // sweep on every poll() in tests
+  cfg.sweep_fraction = 1;   // whole table per sweep
   return cfg;
 }
 
@@ -220,7 +222,7 @@ TEST("meter/usage_records_are_deltas_with_a_gapless_sequence") {
   CHECK_EQ(r1.dl_bytes, 0ULL);
   CHECK_EQ(r1.record_seq, 0u);
   CHECK_EQ(r1.reason, static_cast<uint8_t>(RecordReason::kInterval));
-  CHECK_EQ(r2.ul_bytes, 0ULL);      // delta, not cumulative
+  CHECK_EQ(r2.ul_bytes, 0ULL);  // delta, not cumulative
   CHECK_EQ(r2.dl_bytes, 2500ULL);
   CHECK_EQ(r2.record_seq, 1u);
   CHECK_EQ(m.counters(idx).total_bytes(), 3500ULL);

@@ -99,8 +99,7 @@ Timing bench_unordered(const std::vector<uint32_t>& keys, const std::vector<uint
   return {static_cast<double>(elapsed) / lookups, 0.0, static_cast<double>(hits != 0)};
 }
 
-void row(const char* structure, const char* pattern, double load, size_t entries,
-         const Timing& t) {
+void row(const char* structure, const char* pattern, double load, size_t entries, const Timing& t) {
   std::printf("%-18s,%-12s,%6.2f,%10zu,%12.2f,%12.2f\n", structure, pattern, load, entries,
               t.ns_per_lookup, t.probes_per_lookup);
 }
@@ -126,15 +125,13 @@ int main(int argc, char** argv) {
 
       // Probe in an order unrelated to insertion order: a real packet stream
       // does not arrive sorted by TEID.
-      std::vector<uint32_t> probe_order(keys.begin(),
-                                        keys.begin() + static_cast<long>(std::min<size_t>(
-                                                           entries, 100'000)));
+      std::vector<uint32_t> probe_order(
+          keys.begin(), keys.begin() + static_cast<long>(std::min<size_t>(entries, 100'000)));
       std::shuffle(probe_order.begin(), probe_order.end(), rng);
 
-      row("flat_hash", pattern, load, entries, bench_flat(keys, probe_order, kCapacity,
-                                                          iterations));
-      row("unordered_map", pattern, load, entries,
-          bench_unordered(keys, probe_order, iterations));
+      row("flat_hash", pattern, load, entries,
+          bench_flat(keys, probe_order, kCapacity, iterations));
+      row("unordered_map", pattern, load, entries, bench_unordered(keys, probe_order, iterations));
     }
   }
 

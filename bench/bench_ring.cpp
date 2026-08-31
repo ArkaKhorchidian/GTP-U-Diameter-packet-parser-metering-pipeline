@@ -71,8 +71,7 @@ void run_spsc(size_t capacity, uint64_t count, uint64_t target_pps, bool measure
 
   char name[64];
   std::snprintf(name, sizeof(name), "spsc_2^%d%s",
-                static_cast<int>(std::countr_zero(ring.capacity())),
-                target_pps ? "_paced" : "");
+                static_cast<int>(std::countr_zero(ring.capacity())), target_pps ? "_paced" : "");
   bench::print_latency_row(name, hist,
                            static_cast<double>(count) / (static_cast<double>(elapsed) / 1e9));
 }

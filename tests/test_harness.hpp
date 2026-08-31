@@ -32,7 +32,9 @@ inline int& failure_count() {
 }
 
 struct Registrar {
-  Registrar(const char* name, std::function<void()> fn) { registry().push_back({name, std::move(fn)}); }
+  Registrar(const char* name, std::function<void()> fn) {
+    registry().push_back({name, std::move(fn)});
+  }
 };
 
 /// Thrown by REQUIRE_* to abort the current test case only.
@@ -65,10 +67,10 @@ inline std::string to_display(const T& v) {
 #define GTPM_CONCAT_INNER(a, b) a##b
 #define GTPM_CONCAT(a, b) GTPM_CONCAT_INNER(a, b)
 
-#define TEST(name)                                                                  \
-  static void GTPM_CONCAT(gtpm_test_fn_, __LINE__)();                               \
-  static const ::gtpm::test::Registrar GTPM_CONCAT(gtpm_test_reg_, __LINE__)(       \
-      name, &GTPM_CONCAT(gtpm_test_fn_, __LINE__));                                 \
+#define TEST(name)                                                            \
+  static void GTPM_CONCAT(gtpm_test_fn_, __LINE__)();                         \
+  static const ::gtpm::test::Registrar GTPM_CONCAT(gtpm_test_reg_, __LINE__)( \
+      name, &GTPM_CONCAT(gtpm_test_fn_, __LINE__));                           \
   static void GTPM_CONCAT(gtpm_test_fn_, __LINE__)()
 
 #define CHECK(cond)                                                            \
@@ -76,25 +78,25 @@ inline std::string to_display(const T& v) {
     if (!(cond)) ::gtpm::test::report(__FILE__, __LINE__, "CHECK(" #cond ")"); \
   } while (0)
 
-#define REQUIRE(cond)                                                            \
-  do {                                                                           \
-    if (!(cond)) {                                                               \
-      ::gtpm::test::report(__FILE__, __LINE__, "REQUIRE(" #cond ")");            \
-      throw ::gtpm::test::FatalFailure{};                                        \
-    }                                                                            \
+#define REQUIRE(cond)                                                 \
+  do {                                                                \
+    if (!(cond)) {                                                    \
+      ::gtpm::test::report(__FILE__, __LINE__, "REQUIRE(" #cond ")"); \
+      throw ::gtpm::test::FatalFailure{};                             \
+    }                                                                 \
   } while (0)
 
-#define GTPM_CMP(a, b, op, fatal)                                                          \
-  do {                                                                                     \
-    const auto& gtpm_a = (a);                                                              \
-    const auto& gtpm_b = (b);                                                              \
-    if (!(gtpm_a op gtpm_b)) {                                                             \
-      ::gtpm::test::report(__FILE__, __LINE__,                                             \
-                           std::string(#a " " #op " " #b " => ") +                         \
-                               ::gtpm::test::to_display(gtpm_a) + " vs " +                 \
-                               ::gtpm::test::to_display(gtpm_b));                          \
-      if (fatal) throw ::gtpm::test::FatalFailure{};                                       \
-    }                                                                                      \
+#define GTPM_CMP(a, b, op, fatal)                                          \
+  do {                                                                     \
+    const auto& gtpm_a = (a);                                              \
+    const auto& gtpm_b = (b);                                              \
+    if (!(gtpm_a op gtpm_b)) {                                             \
+      ::gtpm::test::report(__FILE__, __LINE__,                             \
+                           std::string(#a " " #op " " #b " => ") +         \
+                               ::gtpm::test::to_display(gtpm_a) + " vs " + \
+                               ::gtpm::test::to_display(gtpm_b));          \
+      if (fatal) throw ::gtpm::test::FatalFailure{};                       \
+    }                                                                      \
   } while (0)
 
 #define CHECK_EQ(a, b) GTPM_CMP(a, b, ==, false)
@@ -105,28 +107,28 @@ inline std::string to_display(const T& v) {
 #define CHECK_GE(a, b) GTPM_CMP(a, b, >=, false)
 #define REQUIRE_EQ(a, b) GTPM_CMP(a, b, ==, true)
 
-#define GTPM_TEST_MAIN()                                                                   \
-  int main(int argc, char** argv) {                                                        \
-    const char* filter = argc > 1 ? argv[1] : nullptr;                                     \
-    int run = 0, failed_cases = 0;                                                         \
-    for (auto& tc : ::gtpm::test::registry()) {                                            \
-      if (filter && std::strstr(tc.name, filter) == nullptr) continue;                     \
-      ++run;                                                                               \
-      const int before = ::gtpm::test::failure_count();                                    \
-      std::printf("[ RUN  ] %s\n", tc.name);                                               \
-      try {                                                                                \
-        tc.fn();                                                                           \
-      } catch (const ::gtpm::test::FatalFailure&) {                                        \
-        /* already reported */                                                             \
-      } catch (const std::exception& e) {                                                  \
-        ::gtpm::test::report(__FILE__, __LINE__,                                           \
-                             std::string("unexpected exception: ") + e.what());            \
-      }                                                                                    \
-      const bool ok = ::gtpm::test::failure_count() == before;                             \
-      if (!ok) ++failed_cases;                                                             \
-      std::printf("[ %s ] %s\n", ok ? " OK " : "FAIL", tc.name);                           \
-    }                                                                                      \
-    std::printf("\n%d test(s) run, %d failed, %d assertion failure(s)\n", run,             \
-                failed_cases, ::gtpm::test::failure_count());                              \
-    return failed_cases == 0 ? 0 : 1;                                                      \
+#define GTPM_TEST_MAIN()                                                                     \
+  int main(int argc, char** argv) {                                                          \
+    const char* filter = argc > 1 ? argv[1] : nullptr;                                       \
+    int run = 0, failed_cases = 0;                                                           \
+    for (auto& tc : ::gtpm::test::registry()) {                                              \
+      if (filter && std::strstr(tc.name, filter) == nullptr) continue;                       \
+      ++run;                                                                                 \
+      const int before = ::gtpm::test::failure_count();                                      \
+      std::printf("[ RUN  ] %s\n", tc.name);                                                 \
+      try {                                                                                  \
+        tc.fn();                                                                             \
+      } catch (const ::gtpm::test::FatalFailure&) {                                          \
+        /* already reported */                                                               \
+      } catch (const std::exception& e) {                                                    \
+        ::gtpm::test::report(__FILE__, __LINE__,                                             \
+                             std::string("unexpected exception: ") + e.what());              \
+      }                                                                                      \
+      const bool ok = ::gtpm::test::failure_count() == before;                               \
+      if (!ok) ++failed_cases;                                                               \
+      std::printf("[ %s ] %s\n", ok ? " OK " : "FAIL", tc.name);                             \
+    }                                                                                        \
+    std::printf("\n%d test(s) run, %d failed, %d assertion failure(s)\n", run, failed_cases, \
+                ::gtpm::test::failure_count());                                              \
+    return failed_cases == 0 ? 0 : 1;                                                        \
   }

@@ -74,9 +74,8 @@ class SnapshotPublisher {
       const size_t idx = (write_hint_ + attempt) % N;
       if (static_cast<int>(idx) == current) continue;
       uint32_t expected = 0;
-      if (slots_[idx].refs.compare_exchange_strong(expected, kWriterOwned,
-                                                   std::memory_order_acquire,
-                                                   std::memory_order_relaxed)) {
+      if (slots_[idx].refs.compare_exchange_strong(
+              expected, kWriterOwned, std::memory_order_acquire, std::memory_order_relaxed)) {
         writing_ = static_cast<int>(idx);
         write_hint_ = (idx + 1) % N;
         return &slots_[idx].value;

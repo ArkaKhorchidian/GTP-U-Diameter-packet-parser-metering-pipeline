@@ -38,9 +38,9 @@ enum class LinkType : uint32_t {
 };
 
 struct PcapPacket {
-  Bytes data;           ///< captured bytes, a view into the loaded file
-  uint64_t ts_ns = 0;   ///< capture timestamp, nanoseconds since the epoch
-  uint32_t orig_len = 0;///< length on the wire before snaplen truncation
+  Bytes data;             ///< captured bytes, a view into the loaded file
+  uint64_t ts_ns = 0;     ///< capture timestamp, nanoseconds since the epoch
+  uint32_t orig_len = 0;  ///< length on the wire before snaplen truncation
 
   [[nodiscard]] bool truncated() const noexcept { return data.size() < orig_len; }
 };
@@ -125,8 +125,8 @@ class PcapFile {
 
       PcapPacket p;
       p.data = Bytes(out.bytes_.data() + off, incl_len);
-      p.ts_ns = static_cast<uint64_t>(ts_sec) * 1'000'000'000ULL +
-                (nanos ? ts_frac : ts_frac * 1000ULL);
+      p.ts_ns =
+          static_cast<uint64_t>(ts_sec) * 1'000'000'000ULL + (nanos ? ts_frac : ts_frac * 1000ULL);
       p.orig_len = orig_len;
       out.packets_.push_back(p);
       off += incl_len;
@@ -166,8 +166,7 @@ class PcapWriter {
   PcapWriter(const PcapWriter&) = delete;
   PcapWriter& operator=(const PcapWriter&) = delete;
 
-  [[nodiscard]] bool open(const std::string& path,
-                          LinkType link = LinkType::kEthernet,
+  [[nodiscard]] bool open(const std::string& path, LinkType link = LinkType::kEthernet,
                           uint32_t snaplen = 262144) {
     close();
     file_ = std::fopen(path.c_str(), "wb");
@@ -237,8 +236,7 @@ struct LinkLayer {
         out.valid = true;
       }
       break;
-    default:
-      break;
+    default: break;
   }
   return out;
 }

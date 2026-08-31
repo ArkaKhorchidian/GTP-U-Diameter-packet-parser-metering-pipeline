@@ -155,11 +155,10 @@ void Runtime::publish_locked(uint64_t now) {
   snap.teid_table_size = engine_.teid_map().size();
   snap.teid_table_capacity = engine_.teid_map().capacity();
   snap.teid_load_factor = engine_.teid_map().load_factor();
-  snap.teid_probes_per_lookup =
-      engine_.teid_map().lookup_count() == 0
-          ? 0.0
-          : static_cast<double>(engine_.teid_map().probe_count()) /
-                static_cast<double>(engine_.teid_map().lookup_count());
+  snap.teid_probes_per_lookup = engine_.teid_map().lookup_count() == 0
+                                    ? 0.0
+                                    : static_cast<double>(engine_.teid_map().probe_count()) /
+                                          static_cast<double>(engine_.teid_map().lookup_count());
   snap.meter_batches = meter_batches_;
   snap.meter_idle_polls = meter_idle_polls_;
   stats_.store(snap);
@@ -263,7 +262,9 @@ void Runtime::advance_detail_scan(uint64_t publish_wall_ns) {
   detail_building_ = nullptr;
 }
 
-void Runtime::publish_now() { publish_locked(now_ns()); }
+void Runtime::publish_now() {
+  publish_locked(now_ns());
+}
 
 PipelineSnapshot Runtime::snapshot() const {
   PipelineSnapshot snap;

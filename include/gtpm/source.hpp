@@ -34,7 +34,7 @@ class PacketSource {
 class PcapReplaySource final : public PacketSource {
  public:
   struct Options {
-    uint32_t loops = 1;          ///< 0 means loop forever until stopped
+    uint32_t loops = 1;              ///< 0 means loop forever until stopped
     bool rewrite_timestamps = true;  ///< stamp with capture time on replay
   };
 

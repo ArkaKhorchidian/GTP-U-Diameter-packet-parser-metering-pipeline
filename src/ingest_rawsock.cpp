@@ -52,8 +52,7 @@ LiveCaptureSource::~LiveCaptureSource() {
 
 #if defined(__linux__)
 
-std::unique_ptr<LiveCaptureSource> LiveCaptureSource::open(const Options& opt,
-                                                           std::string& error) {
+std::unique_ptr<LiveCaptureSource> LiveCaptureSource::open(const Options& opt, std::string& error) {
   auto src = std::unique_ptr<LiveCaptureSource>(new LiveCaptureSource());
   src->opt_ = opt;
 
@@ -122,8 +121,7 @@ size_t LiveCaptureSource::next_batch(PcapPacket* out, size_t max) {
 
 #elif defined(__APPLE__)
 
-std::unique_ptr<LiveCaptureSource> LiveCaptureSource::open(const Options& opt,
-                                                           std::string& error) {
+std::unique_ptr<LiveCaptureSource> LiveCaptureSource::open(const Options& opt, std::string& error) {
   auto src = std::unique_ptr<LiveCaptureSource>(new LiveCaptureSource());
   src->opt_ = opt;
 
@@ -218,7 +216,9 @@ std::unique_ptr<LiveCaptureSource> LiveCaptureSource::open(const Options&, std::
   return nullptr;
 }
 
-size_t LiveCaptureSource::next_batch(PcapPacket*, size_t) { return 0; }
+size_t LiveCaptureSource::next_batch(PcapPacket*, size_t) {
+  return 0;
+}
 
 #endif
 

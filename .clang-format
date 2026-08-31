@@ -8,4 +8,6 @@ AccessModifierOffset: -1
 DerivePointerAlignment: false
 PointerAlignment: Left
 AllowShortFunctionsOnASingleLine: Inline
+# Single-line case labels keep protocol dispatch tables readable as tables.
+AllowShortCaseLabelsOnASingleLine: true
 IncludeBlocks: Preserve

@@ -39,12 +39,12 @@ struct IngestStats {
 };
 
 enum class FrameOutcome : uint8_t {
-  kMetered = 0,       ///< produced a MeterEvent
-  kGyControl,         ///< produced one or more Gy control events
-  kGtpuControl,       ///< Echo / Error Indication / End Marker
-  kNotOurTraffic,     ///< not GTP-U and not Diameter
+  kMetered = 0,    ///< produced a MeterEvent
+  kGyControl,      ///< produced one or more Gy control events
+  kGtpuControl,    ///< Echo / Error Indication / End Marker
+  kNotOurTraffic,  ///< not GTP-U and not Diameter
   kParseError,
-  kDropped,           ///< ring full
+  kDropped,  ///< ring full
 };
 
 struct IngestConfig {
@@ -138,8 +138,8 @@ class Ingest {
     const IpPacket inner = parse_ip(h.payload);
     if (inner.valid) {
       ev.flags |= kFlagInnerParsed;
-      ev.bytes = cfg_.meter_inner_ip_length ? inner.ip_total_len
-                                            : static_cast<uint32_t>(h.payload.size());
+      ev.bytes =
+          cfg_.meter_inner_ip_length ? inner.ip_total_len : static_cast<uint32_t>(h.payload.size());
       ev.ip_version = inner.tuple.ip_version;
       ev.proto = inner.tuple.proto;
       ev.src_port = inner.tuple.src_port;

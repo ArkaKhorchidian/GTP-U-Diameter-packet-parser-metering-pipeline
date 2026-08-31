@@ -38,7 +38,7 @@ struct RuntimeConfig {
   size_t gy_ring_size = 1u << 12;
   size_t record_ring_size = 1u << 14;
   size_t meter_batch = 256;
-  int ingest_cpu = -1;   ///< pin the calling thread; -1 leaves it alone
+  int ingest_cpu = -1;  ///< pin the calling thread; -1 leaves it alone
   int meter_cpu = -1;
   int reporter_cpu = -1;
   uint64_t publish_interval_ns = 100'000'000ULL;  ///< 10 Hz snapshot publication

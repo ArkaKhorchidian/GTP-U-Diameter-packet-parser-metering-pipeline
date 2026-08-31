@@ -64,8 +64,8 @@ struct FiveTuple {
 /// Result of decoding one IP packet.
 struct IpPacket {
   FiveTuple tuple{};
-  Bytes l4_payload{};       ///< bytes after the L4 header (TCP/UDP), empty otherwise
-  uint32_t ip_total_len = 0;///< IP total length as declared on the wire
+  Bytes l4_payload{};         ///< bytes after the L4 header (TCP/UDP), empty otherwise
+  uint32_t ip_total_len = 0;  ///< IP total length as declared on the wire
   uint16_t l3_header_len = 0;
   uint16_t l4_header_len = 0;
   bool valid = false;
@@ -265,10 +265,10 @@ inline const char* format_ip(const IpAddr& addr, uint8_t version, char* buf, siz
   if (version == 4) {
     std::snprintf(buf, buf_len, "%u.%u.%u.%u", addr[0], addr[1], addr[2], addr[3]);
   } else if (version == 6) {
-    std::snprintf(buf, buf_len, "%x:%x:%x:%x:%x:%x:%x:%x", load_be16(addr.data()),
-                  load_be16(addr.data() + 2), load_be16(addr.data() + 4), load_be16(addr.data() + 6),
-                  load_be16(addr.data() + 8), load_be16(addr.data() + 10),
-                  load_be16(addr.data() + 12), load_be16(addr.data() + 14));
+    std::snprintf(
+        buf, buf_len, "%x:%x:%x:%x:%x:%x:%x:%x", load_be16(addr.data()), load_be16(addr.data() + 2),
+        load_be16(addr.data() + 4), load_be16(addr.data() + 6), load_be16(addr.data() + 8),
+        load_be16(addr.data() + 10), load_be16(addr.data() + 12), load_be16(addr.data() + 14));
   } else {
     std::snprintf(buf, buf_len, "-");
   }

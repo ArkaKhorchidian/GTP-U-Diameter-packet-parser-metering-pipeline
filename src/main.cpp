@@ -22,7 +22,9 @@ namespace {
 
 std::atomic<bool> g_stop{false};
 
-void on_signal(int) { g_stop.store(true, std::memory_order_release); }
+void on_signal(int) {
+  g_stop.store(true, std::memory_order_release);
+}
 
 void usage() {
   std::printf(R"(gtp-meter - GTP-U / Diameter metering pipeline
@@ -134,11 +136,12 @@ void print_summary(const gtpm::PipelineSnapshot& s, double elapsed_s, uint64_t r
   std::printf("  frames ingested      %llu (%.3f Mpps)\n",
               static_cast<unsigned long long>(s.ingest.frames),
               elapsed_s > 0 ? static_cast<double>(s.ingest.frames) / elapsed_s / 1e6 : 0.0);
-  std::printf("  bytes ingested       %llu (%.3f Gbps)\n",
-              static_cast<unsigned long long>(s.ingest.frames_bytes),
-              elapsed_s > 0 ? static_cast<double>(s.ingest.frames_bytes) * 8.0 / elapsed_s / 1e9
-                            : 0.0);
-  std::printf("  GTP-U G-PDUs         %llu\n", static_cast<unsigned long long>(s.ingest.gtpu_gpdus));
+  std::printf(
+      "  bytes ingested       %llu (%.3f Gbps)\n",
+      static_cast<unsigned long long>(s.ingest.frames_bytes),
+      elapsed_s > 0 ? static_cast<double>(s.ingest.frames_bytes) * 8.0 / elapsed_s / 1e9 : 0.0);
+  std::printf("  GTP-U G-PDUs         %llu\n",
+              static_cast<unsigned long long>(s.ingest.gtpu_gpdus));
   std::printf("  GTP-U control        %llu\n",
               static_cast<unsigned long long>(s.ingest.gtpu_control));
   std::printf("  GTP-U parse errors   %llu\n",
@@ -268,8 +271,8 @@ int main(int argc, char** argv) {
       return 1;
     }
     std::fprintf(stderr, "gtp-meter: loaded %zu packets (%zu bytes, link type %u) from %s\n",
-                 replay->file().packets().size(), replay->file().total_bytes(),
-                 replay->link_type(), opt.pcap_path.c_str());
+                 replay->file().packets().size(), replay->file().total_bytes(), replay->link_type(),
+                 opt.pcap_path.c_str());
     source = std::move(replay);
   } else {
     gtpm::LiveCaptureSource::Options lopt;
@@ -296,8 +299,8 @@ int main(int argc, char** argv) {
   cfg.reporter_cpu = opt.reporter_cpu;
   cfg.measure_latency = opt.measure_latency;
   cfg.busy_poll = opt.busy_poll;
-  cfg.latency_sample_every = static_cast<uint32_t>(opt.latency_sample == 0 ? 1
-                                                                          : opt.latency_sample);
+  cfg.latency_sample_every =
+      static_cast<uint32_t>(opt.latency_sample == 0 ? 1 : opt.latency_sample);
 
   gtpm::Runtime runtime(cfg);
 

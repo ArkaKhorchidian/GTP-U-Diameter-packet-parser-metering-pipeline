@@ -70,7 +70,7 @@ enum class CcRequestType : uint32_t {
 };
 
 enum class SubscriptionIdType : uint32_t {
-  kE164 = 0,   ///< MSISDN
+  kE164 = 0,  ///< MSISDN
   kImsi = 1,
   kSipUri = 2,
   kNai = 3,
@@ -81,11 +81,11 @@ inline constexpr uint32_t kResultSuccess = 2001;
 
 enum class DiameterStatus : uint8_t {
   kOk = 0,
-  kTruncated,      ///< fewer bytes than the header or declared length needs
-  kBadVersion,     ///< version != 1
-  kBadLength,      ///< length field < header, > cap, or not 4-byte aligned
-  kBadAvp,         ///< AVP length < header size or overrunning the message
-  kAvpTooDeep,     ///< grouped AVP nesting past kAvpMaxDepth
+  kTruncated,   ///< fewer bytes than the header or declared length needs
+  kBadVersion,  ///< version != 1
+  kBadLength,   ///< length field < header, > cap, or not 4-byte aligned
+  kBadAvp,      ///< AVP length < header size or overrunning the message
+  kAvpTooDeep,  ///< grouped AVP nesting past kAvpMaxDepth
 };
 
 [[nodiscard]] constexpr const char* to_string(DiameterStatus s) noexcept {
@@ -290,15 +290,11 @@ inline void parse_mscc(const Avp& mscc_avp, MsccInfo& info, int depth) noexcept 
       mscc_avp,
       [&info, depth](const Avp& a, int) noexcept {
         switch (static_cast<AvpCode>(a.code)) {
-          case AvpCode::kRatingGroup:
-            info.has_rating_group = a.as_u32(info.rating_group);
-            break;
+          case AvpCode::kRatingGroup: info.has_rating_group = a.as_u32(info.rating_group); break;
           case AvpCode::kServiceIdentifier:
             info.has_service_identifier = a.as_u32(info.service_identifier);
             break;
-          case AvpCode::kUsedServiceUnit:
-            parse_used_service_unit(a, info, depth + 1);
-            break;
+          case AvpCode::kUsedServiceUnit: parse_used_service_unit(a, info, depth + 1); break;
           case AvpCode::kGrantedServiceUnit:
             info.has_granted = true;
             (void)for_each_sub_avp(

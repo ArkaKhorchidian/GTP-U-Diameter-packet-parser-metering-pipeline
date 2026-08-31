@@ -122,14 +122,14 @@ struct PipelineStats {
 };
 
 struct MeterConfig {
-  size_t max_subscribers = 1u << 20;      ///< 1M sessions => 64 MB of hot counters
-  size_t teid_table_capacity = 1u << 22;  ///< two TEIDs per session, load < 0.5
-  size_t flow_table_capacity = 1u << 20;  ///< 64 MB of flow entries
-  size_t flow_probe_window = 8;           ///< probes before LRU eviction
-  uint64_t report_interval_ns = 10'000'000'000ULL;   ///< 10 s reporting timer
-  uint64_t volume_threshold_bytes = 100ULL << 20;    ///< 100 MB triggers a record
-  uint64_t sweep_period_ns = 100'000'000ULL;         ///< how often poll() advances
-  size_t sweep_fraction = 16;   ///< table slices per full sweep; bounds per-call work
+  size_t max_subscribers = 1u << 20;                ///< 1M sessions => 64 MB of hot counters
+  size_t teid_table_capacity = 1u << 22;            ///< two TEIDs per session, load < 0.5
+  size_t flow_table_capacity = 1u << 20;            ///< 64 MB of flow entries
+  size_t flow_probe_window = 8;                     ///< probes before LRU eviction
+  uint64_t report_interval_ns = 10'000'000'000ULL;  ///< 10 s reporting timer
+  uint64_t volume_threshold_bytes = 100ULL << 20;   ///< 100 MB triggers a record
+  uint64_t sweep_period_ns = 100'000'000ULL;        ///< how often poll() advances
+  size_t sweep_fraction = 16;  ///< table slices per full sweep; bounds per-call work
   bool track_flows = true;
   bool learn_unknown_teids = false;  ///< a real UPF meters only installed PDRs
 };
@@ -324,8 +324,8 @@ class MeterEngine {
       if (!info.active) continue;
 
       const SubscriberCounters& c = counters_[idx];
-      const uint64_t pending = (c.ul_bytes - info.emitted_ul_bytes) +
-                               (c.dl_bytes - info.emitted_dl_bytes);
+      const uint64_t pending =
+          (c.ul_bytes - info.emitted_ul_bytes) + (c.dl_bytes - info.emitted_dl_bytes);
       if (pending == 0) continue;
 
       if (cfg_.volume_threshold_bytes != 0 && pending >= cfg_.volume_threshold_bytes) {

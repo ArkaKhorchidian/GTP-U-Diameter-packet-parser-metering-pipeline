@@ -117,8 +117,7 @@ RunResult run_pipeline(const Corpus& corpus, uint64_t target_pps, uint64_t frame
 
   const PipelineSnapshot snap = runtime.snapshot();
   const double seconds = static_cast<double>(elapsed) / 1e9;
-  const double bytes =
-      static_cast<double>(snap.ingest.frames_bytes);
+  const double bytes = static_cast<double>(snap.ingest.frames_bytes);
   return {target_pps == 0 ? 0.0 : static_cast<double>(target_pps) / 1e6,
           static_cast<double>(frames_to_send) / seconds / 1e6,
           bytes * 8.0 / seconds / 1e9,
@@ -203,7 +202,8 @@ RunResult run_baseline(const Corpus& corpus, uint64_t target_pps, uint64_t frame
     }
   }
 
-  while (applied.load(std::memory_order_relaxed) < frames_to_send && now_ns() - start < 30'000'000'000ULL) {
+  while (applied.load(std::memory_order_relaxed) < frames_to_send &&
+         now_ns() - start < 30'000'000'000ULL) {
     cpu_relax();
   }
   const uint64_t elapsed = now_ns() - start;
@@ -248,11 +248,10 @@ int main(int argc, char** argv) {
   std::printf("# corpus: %zu distinct frames, %.1f B average\n", corpus.frames.size(),
               static_cast<double>(corpus.total_bytes) / static_cast<double>(corpus.frames.size()));
 
-  std::printf("\n%-16s,%10s,%10s,%10s,%9s,%8s,%8s,%8s,%8s,%8s\n", "pipeline", "offered",
-              "achieved", "Gbps", "drops", "p50", "p99", "p99.9", "p99.99", "max");
+  std::printf("\n%-16s,%10s,%10s,%10s,%9s,%8s,%8s,%8s,%8s,%8s\n", "pipeline", "offered", "achieved",
+              "Gbps", "drops", "p50", "p99", "p99.9", "p99.99", "max");
 
-  for (const uint64_t rate : {500'000ULL, 1'000'000ULL, 2'000'000ULL, 4'000'000ULL,
-                              8'000'000ULL}) {
+  for (const uint64_t rate : {500'000ULL, 1'000'000ULL, 2'000'000ULL, 4'000'000ULL, 8'000'000ULL}) {
     print_row("gtp-meter", run_pipeline(corpus, rate, frames));
   }
   print_row("gtp-meter", run_pipeline(corpus, 0, frames));

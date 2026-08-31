@@ -16,7 +16,9 @@ using synth::Buf;
 
 namespace {
 
-Bytes view(const Buf& b) { return Bytes(b.data(), b.size()); }
+Bytes view(const Buf& b) {
+  return Bytes(b.data(), b.size());
+}
 
 Buf gtpu_frame(uint32_t teid, size_t payload_len, bool with_qfi = false, uint8_t qfi = 0,
                uint8_t pdu_type = 0) {

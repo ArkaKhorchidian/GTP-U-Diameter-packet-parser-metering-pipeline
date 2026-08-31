@@ -70,7 +70,7 @@ TEST("session/skips_malformed_rows_without_failing") {
       "not-a-number,1,2,3\n"
       "310150000000005\n"
       "310150000000006,4294967296,2,3\n"  // TEID out of 32-bit range
-      "0,1,2,3\n"                          // IMSI 0 is not a session
+      "0,1,2,3\n"                         // IMSI 0 is not a session
       "310150000000007,300,400,2\n");
   const SessionLoadResult r = load_sessions_csv(path);
   std::remove(path.c_str());

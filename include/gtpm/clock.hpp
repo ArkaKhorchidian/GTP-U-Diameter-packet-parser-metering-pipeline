@@ -7,14 +7,14 @@
 // _RAW, and its CLOCK_MONOTONIC is already an un-slewed uptime clock.
 #pragma once
 
+#include <cstdint>
 #include <cstdio>
 #include <ctime>
-#include <cstdint>
 #include <string>
 
 #if defined(__linux__)
-#include <sched.h>
 #include <pthread.h>
+#include <sched.h>
 #elif defined(__APPLE__)
 #include <mach/thread_act.h>
 #include <mach/thread_policy.h>

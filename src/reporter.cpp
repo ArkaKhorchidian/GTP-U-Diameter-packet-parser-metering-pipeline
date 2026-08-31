@@ -27,9 +27,9 @@ void append(std::string& out, const char* fmt, ...) {
   va_start(args, fmt);
   const int n = std::vsnprintf(buf, sizeof(buf), fmt, args);
   va_end(args);
-  if (n > 0) out.append(buf, static_cast<size_t>(n < static_cast<int>(sizeof(buf))
-                                                     ? n
-                                                     : static_cast<int>(sizeof(buf)) - 1));
+  if (n > 0)
+    out.append(buf, static_cast<size_t>(
+                        n < static_cast<int>(sizeof(buf)) ? n : static_cast<int>(sizeof(buf)) - 1));
 }
 
 void counter(std::string& out, const char* name, const char* help, unsigned long long value) {
@@ -135,8 +135,7 @@ std::string render_prometheus(const PipelineSnapshot& s, const DetailSnapshot* d
   gauge(out, "gtpm_teid_table_load_factor", "TEID hash table load factor", s.teid_load_factor);
   gauge(out, "gtpm_teid_probes_per_lookup", "Average probes per TEID lookup",
         s.teid_probes_per_lookup);
-  gauge(out, "gtpm_uptime_seconds", "Pipeline uptime",
-        static_cast<double>(s.uptime_ns) / 1e9);
+  gauge(out, "gtpm_uptime_seconds", "Pipeline uptime", static_cast<double>(s.uptime_ns) / 1e9);
 
   append(out,
          "# HELP gtpm_e2e_latency_ns Ingest-to-counter latency, sampled\n"
@@ -163,13 +162,12 @@ std::string render_prometheus(const PipelineSnapshot& s, const DetailSnapshot* d
     const size_t n = std::min(subscriber_series, detail->subscribers.size());
     for (size_t i = 0; i < n; ++i) {
       const SubscriberSnapshot& row = detail->subscribers[i];
-      append(out,
-             "gtpm_subscriber_bytes_total{imsi=\"%llu\",direction=\"uplink\"} %llu\n"
-             "gtpm_subscriber_bytes_total{imsi=\"%llu\",direction=\"downlink\"} %llu\n",
-             static_cast<unsigned long long>(row.imsi),
-             static_cast<unsigned long long>(row.ul_bytes),
-             static_cast<unsigned long long>(row.imsi),
-             static_cast<unsigned long long>(row.dl_bytes));
+      append(
+          out,
+          "gtpm_subscriber_bytes_total{imsi=\"%llu\",direction=\"uplink\"} %llu\n"
+          "gtpm_subscriber_bytes_total{imsi=\"%llu\",direction=\"downlink\"} %llu\n",
+          static_cast<unsigned long long>(row.imsi), static_cast<unsigned long long>(row.ul_bytes),
+          static_cast<unsigned long long>(row.imsi), static_cast<unsigned long long>(row.dl_bytes));
     }
   }
   return out;
@@ -416,8 +414,8 @@ HttpResponse route(const Runtime& runtime, const HttpRequest& req) {
       return res;
     }
     if (!single) {
-      res.body =
-          render_subscribers_json(*detail, static_cast<size_t>(query_param(req.query, "limit", 50)));
+      res.body = render_subscribers_json(*detail,
+                                         static_cast<size_t>(query_param(req.query, "limit", 50)));
       res.body += '\n';
       return res;
     }
@@ -443,7 +441,9 @@ HttpResponse route(const Runtime& runtime, const HttpRequest& req) {
   return res;
 }
 
-HttpReporter::~HttpReporter() { stop(); }
+HttpReporter::~HttpReporter() {
+  stop();
+}
 
 bool HttpReporter::start(std::string& error) {
   listen_fd_ = ::socket(AF_INET, SOCK_STREAM, 0);
