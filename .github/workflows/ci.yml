@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }} / ${{ matrix.compiler }} / ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+            build_type: Release
+          - os: ubuntu-latest
+            compiler: clang
+            cc: clang
+            cxx: clang++
+            build_type: Release
+          - os: ubuntu-latest
+            compiler: gcc
+            cc: gcc
+            cxx: g++
+            build_type: Debug
+          - os: macos-latest
+            compiler: appleclang
+            cc: clang
+            cxx: clang++
+            build_type: Release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Warnings are errors in CI. -march=native is off: the machine that
+      # builds is not the machine that runs, and a benchmark number from a
+      # shared cloud runner is not a result anyway.
+      - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DGTPM_WERROR=ON \
+            -DGTPM_NATIVE_ARCH=OFF
+
+      - name: Build
+        run: cmake --build build -j"$(getconf _NPROCESSORS_ONLN)"
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure --timeout 300
+
+      - name: Smoke test the CLI against generated traffic
+        run: |
+          python3 tools/gen_traffic.py --out /tmp/ci --packets 20000 --subscribers 100
+          ./build/bin/gtp-meter \
+            --pcap /tmp/ci.pcap \
+            --sessions /tmp/ci-sessions.csv \
+            --records /tmp/ci-records.ndjson \
+            --quiet
+          test -s /tmp/ci-records.ndjson
+
+  sanitizers:
+    name: sanitizers (${{ matrix.sanitizer }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [asan-ubsan, tsan]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          if [ "${{ matrix.sanitizer }}" = "tsan" ]; then
+            FLAGS="-DGTPM_TSAN=ON"
+          else
+            FLAGS="-DGTPM_ASAN=ON -DGTPM_UBSAN=ON"
+          fi
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DGTPM_NATIVE_ARCH=OFF \
+            -DGTPM_BUILD_BENCH=OFF \
+            $FLAGS
+
+      - name: Build
+        run: cmake --build build -j"$(getconf _NPROCESSORS_ONLN)"
+
+      - name: Test
+        env:
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+          ASAN_OPTIONS: abort_on_error=1
+          TSAN_OPTIONS: halt_on_error=1
+        run: ctest --test-dir build --output-on-failure --timeout 600
+
+  fuzz:
+    name: libFuzzer (short run)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DGTPM_BUILD_FUZZ=ON \
+            -DGTPM_BUILD_BENCH=OFF \
+            -DGTPM_NATIVE_ARCH=OFF
+
+      - name: Build
+        run: cmake --build build -j"$(getconf _NPROCESSORS_ONLN)"
+
+      # 60 seconds per target on every push: enough to catch a regression that
+      # a longer campaign would eventually have found.
+      - name: Fuzz
+        run: |
+          for target in fuzz_gtpu fuzz_diameter fuzz_pipeline fuzz_pcap; do
+            echo "== $target"
+            ./build/bin/$target -max_total_time=60 -max_len=1500 -print_final_stats=1
+          done
+
+      - name: Upload crashes
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashes
+          path: |
+            crash-*
+            leak-*
+            timeout-*
+          if-no-files-found: ignore
+
+  golden:
+    name: golden replay (exact byte agreement)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DGTPM_NATIVE_ARCH=OFF
+          cmake --build build -j"$(getconf _NPROCESSORS_ONLN)"
+
+      - name: Replay against generated ground truth
+        run: python3 tests/golden_replay.py ./build/bin/gtp-meter --packets 50000 --subscribers 200
+
+      - name: Cross-check against tshark
+        run: |
+          sudo apt-get update && sudo apt-get install -y tshark
+          python3 tools/gen_traffic.py --out /tmp/tshark-check --packets 20000 --subscribers 50
+          tools/verify_with_tshark.sh /tmp/tshark-check.pcap /tmp/tshark-check-sessions.csv \
+            ./build/bin/gtp-meter
+
+  format:
+    name: clang-format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check formatting
+        run: |
+          sudo apt-get update && sudo apt-get install -y clang-format
+          find include src tests bench \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
+            | xargs -0 clang-format --dry-run --Werror

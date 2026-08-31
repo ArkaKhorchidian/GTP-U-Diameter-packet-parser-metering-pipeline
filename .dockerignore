@@ -1,0 +1,8 @@
+build/
+build-*/
+.git/
+.github/
+*.pcap
+*.ndjson
+docs/
+bench/results/
