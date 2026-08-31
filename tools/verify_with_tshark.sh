@@ -20,13 +20,14 @@ command -v tshark >/dev/null || { echo "tshark is not installed" >&2; exit 2; }
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 
-# One row per G-PDU: TEID, and the length of the *encapsulated* packet.
-# occurrence=l takes the last occurrence of each field, which for a tunnelled
-# packet is the inner IP header — exactly what the pipeline charges for.
+# One row per G-PDU: the layer stack, the TEID, and every IP length in the
+# frame. frame.protocols is what says which layer sits inside the tunnel —
+# field presence alone cannot distinguish GTP-over-IPv6-carrying-IPv4 from
+# GTP-over-IPv4-carrying-IPv6, and charging the outer header would be wrong.
 echo "==> reading $PCAP with tshark"
 tshark -r "$PCAP" -Y 'gtp.message == 255' -T fields \
-       -e gtp.teid -e ip.len -e ipv6.plen \
-       -E separator='|' -E occurrence=l 2>/dev/null \
+       -e frame.protocols -e gtp.teid -e ip.len -e ipv6.plen \
+       -E separator='|' -E occurrence=a 2>/dev/null \
   | python3 "$HERE/tshark_totals.py" > "$WORK/tshark.txt"
 
 echo "==> replaying $PCAP through gtp-meter"

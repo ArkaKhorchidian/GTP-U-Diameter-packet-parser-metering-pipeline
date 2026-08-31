@@ -5,7 +5,7 @@ Two modes, both printing `<teid> <bytes>` sorted by TEID so the two can be
 diffed directly:
 
   tshark ... | tshark_totals.py
-      Aggregates tshark's `gtp.teid|ip.len|ipv6.plen` rows.
+      Aggregates tshark's `frame.protocols|gtp.teid|ip.len|ipv6.plen` rows.
 
   tshark_totals.py --records sessions.csv records.ndjson
       Aggregates gtp-meter's NDJSON usage records, mapping each subscriber's
@@ -34,6 +34,23 @@ def parse_teid(text: str) -> int | None:
         return None
 
 
+def inner_l3(protocols: str) -> str | None:
+    """Return "ip", "ipv6", or None for the layer directly inside the tunnel.
+
+    tshark's frame.protocols reads like `eth:ethertype:ip:udp:gtp:ip:udp:data`.
+    The layer after the last `gtp` is the encapsulated one. Guessing from field
+    presence instead does not work: a GTP-U-over-IPv6 capture carrying inner
+    IPv4 has exactly one occurrence of each, same as the reverse.
+    """
+    layers = [layer for layer in protocols.split(":") if layer]
+    for index in range(len(layers) - 1, -1, -1):
+        if layers[index].startswith("gtp"):
+            if index + 1 < len(layers):
+                return layers[index + 1]
+            return None
+    return None
+
+
 def totals_from_tshark(stream) -> dict[int, int]:
     totals: dict[int, int] = {}
     for line in stream:
@@ -41,17 +58,27 @@ def totals_from_tshark(stream) -> dict[int, int]:
         if not line:
             continue
         parts = line.split("|")
-        while len(parts) < 3:
+        while len(parts) < 4:
             parts.append("")
-        teid = parse_teid(parts[0])
+        protocols, teid_text, ip_lens, ipv6_plens = parts[0], parts[1], parts[2], parts[3]
+
+        teid = parse_teid(teid_text)
         if teid is None:
             continue
-        if parts[1].strip():
-            length = int(parts[1].strip())          # inner IPv4 total length
-        elif parts[2].strip():
-            length = 40 + int(parts[2].strip())     # IPv6: header + payload
+
+        layer = inner_l3(protocols)
+        if layer == "ip":
+            values = [v for v in ip_lens.split(",") if v.strip()]
+            if not values:
+                continue
+            length = int(values[-1])            # innermost IPv4 total length
+        elif layer == "ipv6":
+            values = [v for v in ipv6_plens.split(",") if v.strip()]
+            if not values:
+                continue
+            length = 40 + int(values[-1])       # IPv6 header + payload length
         else:
-            continue
+            continue                            # not IP inside the tunnel
         totals[teid] = totals.get(teid, 0) + length
     return totals
 
