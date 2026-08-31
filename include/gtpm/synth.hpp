@@ -7,6 +7,7 @@
 // that all three agree byte-for-byte on what a well-formed packet looks like.
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <cstring>
 #include <string>
@@ -71,6 +72,34 @@ struct UdpSpec {
   uint8_t ttl = 64;
 };
 
+namespace detail {
+
+/// Build a 20-byte IPv4 header with a correct checksum.
+///
+/// Assembled in a fixed array rather than directly into the output vector: the
+/// checksum has to be written back over bytes already emitted, and holding an
+/// interior pointer into a vector that later grows is the kind of thing that is
+/// fine until it is not (GCC diagnoses the pattern outright).
+[[nodiscard]] inline std::array<uint8_t, 20> ipv4_header(uint32_t src, uint32_t dst, uint8_t proto,
+                                                         uint16_t total_len, uint8_t ttl,
+                                                         uint16_t frag_flags = 0x4000) {
+  std::array<uint8_t, 20> h{};
+  h[0] = 0x45;  // IPv4, 5-word header
+  h[1] = 0x00;  // DSCP / ECN
+  store_be16(h.data() + 2, total_len);
+  store_be16(h.data() + 4, 0);  // identification
+  store_be16(h.data() + 6, frag_flags);
+  h[8] = ttl;
+  h[9] = proto;
+  store_be16(h.data() + 10, 0);  // checksum placeholder
+  store_be32(h.data() + 12, src);
+  store_be32(h.data() + 16, dst);
+  store_be16(h.data() + 10, checksum16(h.data(), h.size()));
+  return h;
+}
+
+}  // namespace detail
+
 /// IPv4 + UDP carrying `payload`.
 [[nodiscard]] inline Buf build_ipv4_udp(const UdpSpec& s, Bytes payload) {
   const uint16_t udp_len = static_cast<uint16_t>(8 + payload.size());
@@ -78,18 +107,10 @@ struct UdpSpec {
 
   Buf ip;
   ip.reserve(total_len);
-  ip.push_back(0x45);
-  ip.push_back(0x00);
-  put_be16(ip, total_len);
-  put_be16(ip, 0);       // identification
-  put_be16(ip, 0x4000);  // don't fragment
-  ip.push_back(s.ttl);
-  ip.push_back(static_cast<uint8_t>(IpProto::kUdp));
-  put_be16(ip, 0);  // checksum placeholder
-  put_be32(ip, s.src_ip);
-  put_be32(ip, s.dst_ip);
-  const uint16_t ip_csum = checksum16(ip.data(), 20);
-  store_be16(ip.data() + 10, ip_csum);
+  const auto header =
+      detail::ipv4_header(s.src_ip, s.dst_ip, static_cast<uint8_t>(IpProto::kUdp), total_len,
+                          s.ttl);
+  ip.insert(ip.end(), header.begin(), header.end());
 
   put_be16(ip, s.src_port);
   put_be16(ip, s.dst_port);
@@ -107,17 +128,9 @@ struct UdpSpec {
 
   Buf ip;
   ip.reserve(total_len);
-  ip.push_back(0x45);
-  ip.push_back(0x00);
-  put_be16(ip, total_len);
-  put_be16(ip, 0);
-  put_be16(ip, 0x4000);
-  ip.push_back(s.ttl);
-  ip.push_back(static_cast<uint8_t>(IpProto::kTcp));
-  put_be16(ip, 0);
-  put_be32(ip, s.src_ip);
-  put_be32(ip, s.dst_ip);
-  store_be16(ip.data() + 10, checksum16(ip.data(), 20));
+  const auto header = detail::ipv4_header(
+      s.src_ip, s.dst_ip, static_cast<uint8_t>(IpProto::kTcp), total_len, s.ttl);
+  ip.insert(ip.end(), header.begin(), header.end());
 
   put_be16(ip, s.src_port);
   put_be16(ip, s.dst_port);
