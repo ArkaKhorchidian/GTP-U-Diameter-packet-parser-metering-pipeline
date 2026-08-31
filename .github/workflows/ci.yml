@@ -173,8 +173,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Pinned via pip rather than apt: clang-format's output changes between
+      # major versions, so an unpinned formatter turns a green tree red on
+      # someone else's machine for reasons that have nothing to do with the code.
       - name: Check formatting
         run: |
-          sudo apt-get update && sudo apt-get install -y clang-format
+          pip install --quiet "clang-format==21.1.2"
           find include src tests bench \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
             | xargs -0 clang-format --dry-run --Werror

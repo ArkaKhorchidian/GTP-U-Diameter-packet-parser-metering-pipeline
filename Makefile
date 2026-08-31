@@ -5,6 +5,10 @@ BUILD_DIR ?= build
 BUILD_TYPE ?= Release
 JOBS ?= $(shell (nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4))
 CMAKE_FLAGS ?=
+# Pin the formatter: clang-format's output changes between major versions, so
+# an unpinned one reformats a clean tree. Install with:
+#   pip install clang-format==21.1.2
+CLANG_FORMAT ?= clang-format
 
 .PHONY: all build test bench fmt fmt-check tidy asan tsan fuzz golden traffic run clean help
 
@@ -62,11 +66,13 @@ run: build traffic
 		--records usage-records.ndjson --http 9109 --loops 0 --max-pps 500000
 
 fmt:
-	@find include src tests bench -name '*.cpp' -o -name '*.hpp' | xargs clang-format -i
-	@echo "formatted"
+	@find include src tests bench \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
+		| xargs -0 $(CLANG_FORMAT) -i
+	@echo "formatted with $$($(CLANG_FORMAT) --version)"
 
 fmt-check:
-	@find include src tests bench -name '*.cpp' -o -name '*.hpp' | xargs clang-format --dry-run --Werror
+	@find include src tests bench \( -name '*.cpp' -o -name '*.hpp' \) -print0 \
+		| xargs -0 $(CLANG_FORMAT) --dry-run --Werror
 
 tidy: build
 	@find include src -name '*.cpp' -o -name '*.hpp' \
