@@ -1,7 +1,7 @@
 # gtp-meter parse benchmark: 600 iterations x 4096 packets
 case                        ,   bytes,      Mpps,      Gbps,    ns/pkt
-gtpu_ipv4_udp_64B           ,     142,     79.25,    90.022,      12.6
-gtpu_ipv4_udp_64B_qfi       ,     150,    124.08,   148.902,       8.1
-gtpu_ipv4_udp_1400B         ,    1478,    134.56,  1591.050,       7.4
-gtpu_ipv4_udp_1400B_qfi     ,    1486,    154.24,  1833.642,       6.5
-diameter_gy_ccr             ,     240,     31.92,    61.289,      31.3
+gtpu_ipv4_udp_64B           ,     142,    119.47,   135.716,       8.4
+gtpu_ipv4_udp_64B_qfi       ,     150,    145.17,   174.208,       6.9
+gtpu_ipv4_udp_1400B         ,    1478,    142.77,  1688.132,       7.0
+gtpu_ipv4_udp_1400B_qfi     ,    1486,    153.33,  1822.745,       6.5
+diameter_gy_ccr             ,     240,     32.41,    62.233,      30.9

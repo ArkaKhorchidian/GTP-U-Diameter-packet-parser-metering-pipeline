@@ -37,10 +37,10 @@ measured performance and a byte-exact correctness proof.
 
 On an Apple M5, single core, with the caveats in the README:
 
-- 79-154 Mpps parse throughput for full GTP-U decap.
-- 125 ns p50 end-to-end latency, flat from 0.5 to 8 Mpps.
-- Saturation at 15 Mpps / 88 Gbps with zero drops.
-- 14x lower p50 and 29x lower p99 than a mutex + `std::unordered_map` baseline.
+- 119-153 Mpps parse throughput for full GTP-U decap.
+- 125 ns p50 end-to-end latency, flat across a 16x range of offered load.
+- Saturation at 15.7 Mpps / 92.7 Gbps with zero drops.
+- 14x lower p50 and 39x lower p99 than a mutex + `std::unordered_map` baseline.
 
 ### Verification
 

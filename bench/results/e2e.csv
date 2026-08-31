@@ -6,19 +6,19 @@
 # note: macOS gives affinity hints only, and has no isolcpus or
 #       performance governor. Tail latency here includes scheduler
 #       noise; run on isolated Linux cores for publishable tails.
-# timestamp: 2026-08-31T00:01:22.128Z
+# timestamp: 2026-08-31T00:18:30.501Z
 # frame -> parse -> ring -> subscriber counter; latency in nanoseconds
 # 512 subscribers, mixed 64/512/1400 B payloads, a quarter carrying a 5G QFI
 # corpus: 8192 distinct frames, 738.6 B average
 
 pipeline        ,   offered,  achieved,      Gbps,    drops,     p50,     p99,   p99.9,  p99.99,     max
-gtp-meter       ,      0.50,     0.500,     2.954,        0,     125,     250,    6015,   22655,   46167
-gtp-meter       ,      1.00,     1.000,     5.909,        0,     125,     208,    6655,   28159,   57958
-gtp-meter       ,      2.00,     2.000,    11.817,        0,     125,     293,    7263,  261119,  399792
-gtp-meter       ,      4.00,     4.000,    23.634,        0,     125,     209,    9215,   31743,   50875
-gtp-meter       ,      8.00,     8.000,    47.269,        0,     125,     208,    8063,   25471,   39875
-gtp-meter       ,   unpaced,    15.022,    88.757,        0,     125,    2303,   25855,   39423,   45583
+gtp-meter       ,      0.50,     0.500,     2.954,        0,     125,     417,   17407,  227327,  610959
+gtp-meter       ,      1.00,     1.000,     5.909,        0,     125,     250,    7103,   20351,   57667
+gtp-meter       ,      2.00,     2.000,    11.817,        0,     125,     250,    8511,   24447,   48833
+gtp-meter       ,      4.00,     4.000,    23.634,        0,     125,     208,    7359,   20863,   57875
+gtp-meter       ,      8.00,     8.000,    47.269,        0,     125,     293,   16895,   51967,   66167
+gtp-meter       ,   unpaced,    15.687,    92.690,        0,     125,   12479,   43519,   63999,   69417
 
 # baseline: mutex-guarded std::queue + std::unordered_map counters
-baseline        ,      2.00,     2.000,    11.817,        0,    1791,    8639,   23295,   60927,   80791
-baseline        ,   unpaced,    10.428,    61.613,        0,20971519,24641535,24772607,24772607,24662709
+baseline        ,      2.00,     2.000,    11.817,        0,    1791,    9791,   26239,   83455,   97792
+baseline        ,   unpaced,    10.033,    59.279,        0,18481151,24248319,24379391,24379391,24286292

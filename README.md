@@ -97,11 +97,11 @@ the environment header each benchmark prints, is committed under
 
 | Case | Frame | Mpps | Gbps | ns/pkt |
 |---|---:|---:|---:|---:|
-| GTP-U + inner IPv4/UDP, 64 B payload | 142 B | 79.3 | 90.0 | 12.6 |
-| … with 5G PDU Session Container (QFI) | 150 B | 124.1 | 148.9 | 8.1 |
-| GTP-U + inner IPv4/UDP, 1400 B payload | 1478 B | 134.6 | 1591 | 7.4 |
-| … with QFI | 1486 B | 154.2 | 1834 | 6.5 |
-| Diameter Gy CCR (header + AVP walk + extraction) | 240 B | 31.9 | 61.3 | 31.3 |
+| GTP-U + inner IPv4/UDP, 64 B payload | 142 B | 119.5 | 135.7 | 8.4 |
+| … with 5G PDU Session Container (QFI) | 150 B | 145.2 | 174.2 | 6.9 |
+| GTP-U + inner IPv4/UDP, 1400 B payload | 1478 B | 142.8 | 1688 | 7.0 |
+| … with QFI | 1486 B | 153.3 | 1823 | 6.5 |
+| Diameter Gy CCR (header + AVP walk + extraction) | 240 B | 32.4 | 62.2 | 30.9 |
 
 Full decap per packet: Ethernet → IPv4 → UDP → GTP-U header and extension chain
 → inner IPv4 → UDP ports → 5-tuple hash.
@@ -114,16 +114,22 @@ measure the queue.
 
 | Offered | Achieved | Gbps | Drops | p50 | p99 | p99.9 | p99.99 |
 |---:|---:|---:|---:|---:|---:|---:|---:|
-| 0.5 Mpps | 0.50 | 3.0 | 0 | **125 ns** | 250 ns | 6.0 µs | 22.7 µs |
-| 1 Mpps | 1.00 | 5.9 | 0 | 125 ns | 208 ns | 6.7 µs | 28.2 µs |
-| 2 Mpps | 2.00 | 11.8 | 0 | 125 ns | 293 ns | 7.3 µs | 261 µs |
-| 4 Mpps | 4.00 | 23.6 | 0 | 125 ns | 209 ns | 9.2 µs | 31.7 µs |
-| 8 Mpps | 8.00 | 47.3 | 0 | 125 ns | 208 ns | 8.1 µs | 25.5 µs |
-| unpaced | **15.0** | **88.8** | **0** | 125 ns | 2.3 µs | 25.9 µs | 39.4 µs |
+| 0.5 Mpps | 0.50 | 3.0 | 0 | **125 ns** | 417 ns | 17.4 µs | 227 µs |
+| 1 Mpps | 1.00 | 5.9 | 0 | 125 ns | 250 ns | 7.1 µs | 20.4 µs |
+| 2 Mpps | 2.00 | 11.8 | 0 | 125 ns | 250 ns | 8.5 µs | 24.4 µs |
+| 4 Mpps | 4.00 | 23.6 | 0 | 125 ns | 208 ns | 7.4 µs | 20.9 µs |
+| 8 Mpps | 8.00 | 47.3 | 0 | 125 ns | 293 ns | 16.9 µs | 52.0 µs |
+| unpaced | **15.7** | **92.7** | **0** | 125 ns | 12.5 µs | 43.5 µs | 64.0 µs |
 
-Saturation is 15 Mpps / 88 Gbps on one metering core with **zero drops** — the
-pipeline reaches the point where the ingest thread cannot offer more without
+Saturation is 15.7 Mpps / 92.7 Gbps on one metering core with **zero drops** —
+the pipeline reaches the point where the ingest thread cannot offer more without
 ever losing a byte.
+
+The p50 is flat at 125 ns across a 16× range of offered load, which is the
+result worth reading: the pipeline's cost per packet does not depend on how busy
+it is until it saturates. The p99.9 column wanders between 7 and 17 µs across
+runs and does not order cleanly by load — that is scheduler noise on an
+unisolated laptop, not a property of the code.
 
 ![latency vs throughput](bench/results/latency-vs-throughput.svg)
 
@@ -134,22 +140,22 @@ Same parsers, same workload; only the queue and the counter table change to
 
 | | p50 | p99 | p99.9 | Saturation |
 |---|---:|---:|---:|---:|
-| gtp-meter @ 2 Mpps | 125 ns | 293 ns | 7.3 µs | 15.0 Mpps |
-| baseline @ 2 Mpps | 1791 ns | 8.6 µs | 23.3 µs | 10.4 Mpps |
-| **ratio** | **14×** | **29×** | **3×** | **1.4×** |
+| gtp-meter @ 2 Mpps | 125 ns | 250 ns | 8.5 µs | 15.7 Mpps |
+| baseline @ 2 Mpps | 1791 ns | 9.8 µs | 26.2 µs | 10.0 Mpps |
+| **ratio** | **14×** | **39×** | **3×** | **1.6×** |
 
-Unpaced, the baseline's mutex queue collapses into 21 ms of queueing delay at
+Unpaced, the baseline's mutex queue collapses into 18 ms of queueing delay at
 p50; ours stays at 125 ns.
 
 ### SPSC ring
 
 | Case | Throughput | p50 | p99 | p99.9 |
 |---|---:|---:|---:|---:|
-| Single thread, push+pop pair | 700 M ops/s (1.4 ns/pair) | — | — | — |
-| Two threads, paced to 2 Mpps | 2.0 M ops/s | **83 ns** | 167 ns | 7.2 µs |
-| Mutex + `std::queue`, same pacing | 2.0 M ops/s | 3263 ns | 11.8 µs | 19.6 µs |
-| Two threads, unpaced | 13.7 M ops/s | 125 ns | 3.0 µs | 12.3 µs |
-| Mutex + `std::queue`, unpaced | 9.7 M ops/s | 840 µs | 12.9 ms | 13.2 ms |
+| Single thread, push+pop pair | 896 M ops/s (1.1 ns/pair) | — | — | — |
+| Two threads, paced to 2 Mpps | 2.0 M ops/s | **125 ns** | 167 ns | 6.1 µs |
+| Mutex + `std::queue`, same pacing | 2.0 M ops/s | 3375 ns | 12.4 µs | 24.1 µs |
+| Two threads, unpaced | 13.0 M ops/s | 125 ns | 4.3 µs | 14.0 µs |
+| Mutex + `std::queue`, unpaced | 10.9 M ops/s | 16.1 ms | 33.6 ms | 33.8 ms |
 
 Transit latency is flat from 2^10 to 2^20 entries: the ring size decides how
 much burst you can absorb before dropping, not how fast it is.
@@ -158,14 +164,16 @@ much burst you can absorb before dropping, not how fast it is.
 
 | Structure | Pattern | Load 0.3 | Load 0.5 | Load 0.7 | Probes |
 |---|---|---:|---:|---:|---:|
-| flat open-addressing | random | 4.1 ns | **1.49 ns** | 1.52 ns | 1.05 |
-| `std::unordered_map` | random | 13.5 ns | 8.9 ns | 11.6 ns | — |
-| flat open-addressing | sequential | 1.50 ns | 1.48 ns | 1.49 ns | 1.05 |
-| `std::unordered_map` | sequential | 1.47 ns | 2.9 ns | 1.47 ns | — |
+| flat open-addressing | random | 4.6 ns | **1.59 ns** | 1.62 ns | 1.05 |
+| `std::unordered_map` | random | 13.8 ns | 9.7 ns | 13.0 ns | — |
+| flat open-addressing | sequential | 1.58 ns | 1.58 ns | 1.51 ns | 1.05 |
+| `std::unordered_map` | sequential | 1.53 ns | 2.6 ns | 1.59 ns | — |
 
-The random column is the one to believe — real TEIDs do not arrive sorted, and
-that is where the pointer chase costs 6-8×. Miss cost (packet on a TEID with no
-installed session) is 10 ns for both, at 2.5 probes.
+The random pattern is the one to believe — real TEIDs do not arrive sorted, and
+that is where the pointer chase costs 6-8×. Probe count is flat at 1.05 all the
+way to load factor 0.7, which is the whole argument for open addressing here.
+Miss cost (a packet on a TEID with no installed session) is ~10 ns for both, at
+2.5 probes.
 
 ---
 

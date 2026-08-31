@@ -6,22 +6,22 @@
 # note: macOS gives affinity hints only, and has no isolcpus or
 #       performance governor. Tail latency here includes scheduler
 #       noise; run on isolated Linux cores for publishable tails.
-# timestamp: 2026-08-31T00:01:21.598Z
+# timestamp: 2026-08-31T00:18:29.945Z
 # TEID -> subscriber binding lookup, 30 iterations per case
 structure         ,pattern     ,  load,   entries,   ns/lookup,      probes
-flat_hash         ,random      ,  0.30,    314572,        4.07,        1.05
-unordered_map     ,random      ,  0.30,    314572,       13.52,        0.00
-flat_hash         ,sequential  ,  0.30,    314572,        1.50,        1.05
-unordered_map     ,sequential  ,  0.30,    314572,        1.47,        0.00
-flat_hash         ,random      ,  0.50,    524288,        1.49,        1.05
-unordered_map     ,random      ,  0.50,    524288,        8.94,        0.00
-flat_hash         ,sequential  ,  0.50,    524288,        1.48,        1.05
-unordered_map     ,sequential  ,  0.50,    524288,        2.93,        0.00
-flat_hash         ,random      ,  0.70,    734003,        1.52,        1.05
-unordered_map     ,random      ,  0.70,    734003,       11.56,        0.00
-flat_hash         ,sequential  ,  0.70,    734003,        1.49,        1.05
-unordered_map     ,sequential  ,  0.70,    734003,        1.47,        0.00
+flat_hash         ,random      ,  0.30,    314572,        4.61,        1.05
+unordered_map     ,random      ,  0.30,    314572,       13.80,        0.00
+flat_hash         ,sequential  ,  0.30,    314572,        1.58,        1.05
+unordered_map     ,sequential  ,  0.30,    314572,        1.53,        0.00
+flat_hash         ,random      ,  0.50,    524288,        1.59,        1.05
+unordered_map     ,random      ,  0.50,    524288,        9.68,        0.00
+flat_hash         ,sequential  ,  0.50,    524288,        1.58,        1.05
+unordered_map     ,sequential  ,  0.50,    524288,        2.56,        0.00
+flat_hash         ,random      ,  0.70,    734003,        1.62,        1.05
+unordered_map     ,random      ,  0.70,    734003,       13.04,        0.00
+flat_hash         ,sequential  ,  0.70,    734003,        1.51,        1.05
+unordered_map     ,sequential  ,  0.70,    734003,        1.59,        0.00
 
 # miss path (no session installed for the TEID)
-flat_hash         ,miss        ,  0.50,    524288,        9.96,        2.49
-unordered_map     ,miss        ,  0.50,    524288,       10.21,        0.00
+flat_hash         ,miss        ,  0.50,    524288,       10.31,        2.49
+unordered_map     ,miss        ,  0.50,    524288,        9.48,        0.00
